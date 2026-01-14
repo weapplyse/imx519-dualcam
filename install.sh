@@ -90,9 +90,15 @@ check_jetson() {
 check_jetpack() {
     log_info "Checking JetPack version..."
     
-    local l4t_version
+    local l4t_version=""
     if [[ -f /etc/nv_tegra_release ]]; then
-        l4t_version=$(head -n 1 /etc/nv_tegra_release | sed 's/.*R\([0-9]*\).*/\1/')
+        # Parse "# R36 (release)" format
+        l4t_version=$(head -n 1 /etc/nv_tegra_release | grep -oP 'R\K[0-9]+' | head -1)
+    fi
+    
+    if [[ -z "$l4t_version" ]]; then
+        log_warn "Could not determine L4T version"
+        return 0
     fi
     
     if [[ "$l4t_version" -lt 36 ]]; then

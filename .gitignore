@@ -1,0 +1,15 @@
+# Compiled kernel modules
+*.ko
+*.o
+*.mod
+*.mod.c
+*.mod.o
+Module.symvers
+modules.order
+.*.cmd
+
+# Editor files
+*~
+*.swp
+.vscode/
+.idea/

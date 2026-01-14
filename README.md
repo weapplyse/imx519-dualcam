@@ -22,17 +22,54 @@ Device tree overlay for running dual IMX519 cameras with Videtronic V-Link (MAX9
 
 ### Prerequisites
 
-1. Arducam IMX519 driver package installed:
-   ```bash
-   # Check if installed
-   dpkg -l | grep arducam
-   ```
+#### 1. Arducam IMX519 Driver Package
 
-2. Videtronic V-Link drivers installed:
-   ```bash
-   cd v-link-l4t/v-link-ser && make && sudo make install
-   cd ../v-link-deser && make && sudo make install
-   ```
+The Arducam IMX519 driver must be installed. Follow the official Arducam instructions:
+
+```bash
+# Check if already installed
+dpkg -l | grep arducam
+
+# If not installed, download and install from Arducam:
+# https://docs.arducam.com/Nvidia-Jetson-Camera/Native-Camera/Quick-Start-Guide/
+# 
+# For JetPack 6.x (L4T 36.x):
+wget https://github.com/ArduCAM/MIPI_Camera/releases/download/v0.0.3/arducam-nvidia-l4t-kernel_36.4-2024.12.18-1_arm64.deb
+sudo dpkg -i arducam-nvidia-l4t-kernel_36.4-2024.12.18-1_arm64.deb
+
+# Reboot after installation
+sudo reboot
+```
+
+#### 2. Videtronic V-Link Drivers
+
+The V-Link serializer (MAX96717) and deserializer (MAX96714) drivers are included in this repository.
+
+```bash
+# Build and install the serializer driver
+cd v-link-ser
+make
+sudo make install
+
+# Build and install the deserializer driver
+cd ../v-link-deser
+make
+sudo make install
+
+# Load the modules (or reboot)
+sudo modprobe v-link-ser
+sudo modprobe v-link-deser
+
+# Verify drivers are loaded
+lsmod | grep v-link
+# Should show: v-link_ser and v-link_deser
+```
+
+To make the drivers load automatically on boot:
+```bash
+echo "v-link-ser" | sudo tee -a /etc/modules-load.d/v-link.conf
+echo "v-link-deser" | sudo tee -a /etc/modules-load.d/v-link.conf
+```
 
 ### Install the Overlay
 
@@ -142,8 +179,18 @@ sudo dmesg | grep v-link
 
 ## Files
 
-- `tegra234-p3767-camera-p3768-imx519-vlink-dual.dts` - Device tree source
-- `tegra234-p3767-camera-p3768-imx519-vlink-dual.dtbo` - Compiled device tree overlay
+```
+imx519-vlink-dual/
+├── README.md                                              # This file
+├── tegra234-p3767-camera-p3768-imx519-vlink-dual.dts      # Device tree source
+├── tegra234-p3767-camera-p3768-imx519-vlink-dual.dtbo     # Compiled overlay
+├── v-link-ser/                                            # Serializer driver
+│   ├── Makefile
+│   └── v-link-ser.c
+└── v-link-deser/                                          # Deserializer driver
+    ├── Makefile
+    └── v-link-deser.c
+```
 
 ## Tested Configuration
 

@@ -18,7 +18,30 @@ Device tree overlay for running dual IMX519 cameras with Videtronic V-Link (MAX9
 
 **Important:** CAM1 (serial_c) must NOT have `lane_polarity` set. This is a known requirement for CSI Port 2 on Jetson Orin Nano.
 
-## Installation
+## Quick Install
+
+Run the automated installer:
+
+```bash
+git clone https://github.com/weapplyse/imx519-dualcam.git
+cd imx519-dualcam
+sudo ./install.sh
+```
+
+The installer will:
+1. Check system requirements
+2. Install Arducam IMX519 driver (if needed)
+3. Build and install V-Link drivers
+4. Install the device tree overlay
+5. Configure extlinux.conf
+6. Prompt for reboot
+
+To check current installation status:
+```bash
+sudo ./install.sh --check
+```
+
+## Manual Installation
 
 ### Prerequisites
 
@@ -182,6 +205,7 @@ sudo dmesg | grep v-link
 ```
 imx519-vlink-dual/
 ├── README.md                                              # This file
+├── install.sh                                             # Automated installer
 ├── tegra234-p3767-camera-p3768-imx519-vlink-dual.dts      # Device tree source
 ├── tegra234-p3767-camera-p3768-imx519-vlink-dual.dtbo     # Compiled overlay
 ├── v-link-ser/                                            # Serializer driver
